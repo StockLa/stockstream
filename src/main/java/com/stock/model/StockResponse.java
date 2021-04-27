@@ -1,7 +1,9 @@
 package com.stock.model;
 
+import java.util.Map;
+
 public class StockResponse {
-    private Stock[] data;
+    private Map<String, Stock> data;
     private String status;
 
     public String getStatus() {
@@ -12,11 +14,11 @@ public class StockResponse {
         this.status = status;
     }
 
-    public Stock[] getData() {
+    public Map<String, Stock> getData() {
         return data;
     }
 
-    public void setData(Stock[] data) {
+    public void setData(Map<String, Stock> data) {
         this.data = data;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Map;
 
 public class DummySource implements IStockSource {
     private WebClient webClient;
@@ -16,7 +17,7 @@ public class DummySource implements IStockSource {
     }
 
     @Override
-    public Flux<Stock[]> getStocks(List<String> stocks) {
+    public Flux<Map<String,Stock>> getStocks(List<String> stocks) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/stocks")
