@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stock.model.Stock;
 import com.stock.model.StockRequest;
-import com.stock.model.StockSubscriptionRequestDto;
 import com.stock.service.StockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -53,11 +53,23 @@ public class StockController {
                 }).onErrorStop();
     }
 
-    @PostMapping("/")
-    public Mono<Stock[]> getStocks(@RequestBody StockRequest[] stockRequests) {
-        for (StockRequest stockRequest : stockRequests) {
-            System.out.println(stockRequest);
-        }
-       return Mono.empty();
+    @GetMapping("/delta")
+    public Flux<String> getStocks(@RequestParam(name = "stock") List<String> stocks,
+                                              @RequestParam String delta,
+                                              @RequestParam String duration) {
+        StockRequest stockRequest = new StockRequest();
+        stockRequest.setStockNames(stocks);
+        stockRequest.setDuration(Long.parseLong(duration));
+        stockRequest.setDelta(Double.parseDouble(delta));
+        ObjectMapper objectMapper = new ObjectMapper();
+        return stockService.watchStockDelta(stockRequest)
+                .map(stockResponse -> {
+                    try {
+                        return objectMapper.writeValueAsString(stockResponse);
+                    } catch (JsonProcessingException e) {
+                        logger.error(e.getMessage());
+                    }
+                    return "";
+                }).onErrorStop();
     }
 }

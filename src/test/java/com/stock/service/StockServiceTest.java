@@ -87,21 +87,12 @@ class StockServiceTest {
 
     @Test
     void shouldBeAbleToGetWithConditionAndFirstPrice () {
-        StockRequest stockRequest1 = new StockRequest();
-        stockRequest1.setStockName("ibm");
-        stockRequest1.setConditionType(ConditionType.DELTA_LARGER_THAN);
-        stockRequest1.getConditions().put("delta", "0.2");
-        stockRequest1.getConditions().put("duration", "2");
+        StockRequest stockRequest = new StockRequest();
+        stockRequest.setStockNames(List.of("ibm", "apple"));
+        stockRequest.setDelta(0.2);
+        stockRequest.setDuration(2);
 
-        StockRequest stockRequest2 = new StockRequest();
-        stockRequest2.setStockName("apple");
-        stockRequest2.setConditionType(ConditionType.DELTA_LARGER_THAN);
-        stockRequest2.getConditions().put("delta", "0.2");
-        stockRequest2.getConditions().put("duration", "2");
-
-
-
-        StepVerifier.withVirtualTime(() -> stockService.getStocksWithCondition(List.of(stockRequest1, stockRequest2)))
+        StepVerifier.withVirtualTime(() -> stockService.watchStockDelta(stockRequest))
                 .thenAwait(Duration.ofSeconds(4L))
                 .expectNextMatches(stocks -> stocks.get("ibm").getName().equals("ibm")
                         && stocks.get("ibm").isPriceSame("10.00")

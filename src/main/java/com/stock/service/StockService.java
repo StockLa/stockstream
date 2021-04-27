@@ -36,19 +36,12 @@ public class StockService {
         return mono;
     }
 
-    public Flux<Map<String, Stock>> getStocksWithCondition(List<StockRequest> stockRequests) {
-        List<String> stockNames = new ArrayList<>();
-        for (StockRequest stockRequest : stockRequests) {
-            String stockName;
-            stockName = stockRequest.getStockName();
-            stockNames.add(stockName);
-        }
-
-        Flux<Map<String, Stock>> stocksSteam = getStocks(stockNames);
-        List<Flux<Stock>> listStream = stockRequests.stream().map(stockRequest -> {
-            long duration = Long.parseLong(stockRequest.getConditions().get("duration"));
-            BigDecimal delta = new BigDecimal(stockRequest.getConditions().get("delta"));
-            Flux<Stock> stockStream = stocksSteam.map(stockSteam -> stockSteam.get(stockRequest.getStockName()));
+    public Flux<Map<String, Stock>> watchStockDelta(StockRequest stockRequests) {
+        Flux<Map<String, Stock>> stocksSteam = getStocks(stockRequests.getStockNames());
+        long duration = stockRequests.getDuration();
+        BigDecimal delta = BigDecimal.valueOf(stockRequests.getDelta());
+        List<Flux<Stock>> listStream = stockRequests.getStockNames().stream().map(stockName -> {
+            Flux<Stock> stockStream = stocksSteam.map(stockSteam -> stockSteam.get(stockName));
             return Flux.merge(stockStream.take(1), stockStream
                     .window(Duration.ofSeconds(duration), Duration.ofSeconds(1))
                     .concatMap(Flux::collectList)

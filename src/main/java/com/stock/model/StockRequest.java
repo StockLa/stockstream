@@ -1,45 +1,35 @@
 package com.stock.model;
 
-import com.stock.enums.ConditionType;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class StockRequest {
-    private String stockName;
-    private ConditionType conditionType;
-    private Map<String, String> conditions = new HashMap<>();
+    private List<String> stockNames = List.of();
 
-    @Override
-    public String toString() {
-        return "StockRequest{" +
-                "stockName='" + stockName + '\'' +
-                ", conditionType=" + conditionType +
-                ", conditions=" + conditions +
-                '}';
+    private long duration;
+
+    private double delta;
+
+    public List<String> getStockNames() {
+        return stockNames;
     }
 
-    public String getStockName() {
-        return stockName;
+    public void setStockNames(List<String> stockNames) {
+        this.stockNames = stockNames;
     }
 
-    public void setStockName(String stockName) {
-        this.stockName = stockName;
+    public long getDuration() {
+        return duration;
     }
 
-    public ConditionType getConditionType() {
-        return conditionType;
+    public double getDelta() {
+        return delta;
     }
 
-    public void setConditionType(ConditionType conditionType) {
-        this.conditionType = conditionType;
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 
-    public Map<String, String> getConditions() {
-        return conditions;
-    }
-
-    public void setConditions(Map<String, String> conditions) {
-        this.conditions = conditions;
+    public void setDelta(double delta) {
+        this.delta = delta;
     }
 }
